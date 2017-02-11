@@ -36,7 +36,8 @@ function render(board) {
         row: i,
         col: j,
         color: color,
-        unit: col
+        unit: col.split('-')[1],
+        player: col.split('-')[0]
       })
       html = html + compiled
     })
