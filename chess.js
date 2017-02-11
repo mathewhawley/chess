@@ -108,8 +108,12 @@ function validPieceMove(state, dest) {
   else if (piece === 'wp') return validWhitePawnMove(state, dest)
 }
 
+function sameSquare(state, dest) {
+   return state.origin[0] == dest[0] && state.origin[1] == dest[1]
+}
+
 function validRookMove(state, dest){
-  if(state.origin[0] == dest[0] && state.origin[1] == dest[1]){
+  if(sameSquare(state, dest)){
     return false;
   }
   else if (state.origin[0] != dest[0] && state.origin[1] != dest[1]){
@@ -132,7 +136,15 @@ function validBishopMove(state, dest){
 }
 
 function validKingMove(state, dest){
-  return true
+  if(sameSquare(state, dest)){
+    return false;
+  } else if (Math.abs(state.origin[0]-dest[0]) >1) {
+    return false;
+  } else if (Math.abs(state.origin[1]-dest[1]) >1) {
+    return false;
+  } else {
+    return true
+  }
 }
 
 function validQueenMove(state, dest){
