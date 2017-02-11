@@ -28,50 +28,50 @@
   background-color: pink;
 }
 
-.cell--br {
+[data-player=b][data-unit=r] {
   background-image: url('assets/blackRook.png');
 }
 
-.cell--bkn {
+[data-player=b][data-unit=kn] {
   background-image: url('assets/blackKnight.png');
 }
 
-.cell--bb {
+[data-player=b][data-unit=b] {
   background-image: url('assets/blackBishop.png');
 }
 
-.cell--bq {
+[data-player=b][data-unit=q] {
   background-image: url('assets/blackQueen.png');
 }
 
-.cell--bk {
+[data-player=b][data-unit=k] {
   background-image: url('assets/blackKing.png');
 }
 
-.cell--bp {
+[data-player=b][data-unit=p] {
   background-image: url('assets/blackPawn.png');
 }
 
-.cell--wr {
+[data-player=w][data-unit=r] {
   background-image: url('assets/whiteRook.png');
 }
 
-.cell--wkn {
+[data-player=w][data-unit=kn] {
   background-image: url('assets/whiteKnight.png');
 }
 
-.cell--wb {
+[data-player=w][data-unit=b] {
   background-image: url('assets/whiteBishop.png');
 }
 
-.cell--wq {
+[data-player=w][data-unit=q] {
   background-image: url('assets/whiteQueen.png');
 }
 
-.cell--wk {
+[data-player=w][data-unit=k] {
   background-image: url('assets/whiteKing.png');
 }
 
-.cell--wp {
+[data-player=w][data-unit=p] {
   background-image: url('assets/whitePawn.png');
 }
