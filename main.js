@@ -51,6 +51,13 @@ function addEventListeners(state) {
   })
 }
 
+function getCoords(element) {
+  return [
+    parseInt(element.dataset.row, 10),
+    parseInt(element.dataset.col, 10),
+  ]
+}
+
 function handleSelect(state, event) {
   const { target } = event
   const coords = getCoords(target)
@@ -67,13 +74,6 @@ function handleSelect(state, event) {
       }
     }
   }
-}
-
-function getCoords(element) {
-  return element
-    .getAttribute('id')
-    .split('-')
-    .map(str => parseInt(str, 10))
 }
 
 /**
