@@ -3,12 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <title>Chess</title>
-  <script src="jquery-3.1.1.min.js"></script>
-  <script src="lodash.js"></script>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <!-- mount -->
   <div id="board" class="board"></div>
+
+  <!-- templates -->
+  <script id="cell-template" type="text/template">
+    <div id="<%= row %>-<%= col %>" class="cell cell--<%= color %> cell--<%= unit %>"></div>
+  </script>
+
+  <!-- scripts -->
+  <script src="lodash.js"></script>
   <script src="chess.js"></script>
 </body>
 </html>

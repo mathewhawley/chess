@@ -1,53 +1,147 @@
-const createBoard = () => {
-  const board = [
-    ['br','bkn','bb','bq','bk','bb','bkn','br'],
-    _.times(8, () => 'bp'),
-    _.times(8, () => 'empty'),
-    _.times(8, () => 'empty'),
-    _.times(8, () => 'empty'),
-    _.times(8, () => 'empty'),
-    _.times(8, () => 'wp'),
-    ['wr','wkn','wb','wq','wk','wb','wkn','wr'],
+const mountNode = document.getElementById('board')
+const cellTemplate = document.getElementById('cell-template').innerHTML
+
+function buildUnitRow(player, pawn = false) {
+  if (pawn) {
+    return _.times(8, () => `${player}-p`)
+  }
+  const units = ['r', 'kn', 'b', 'q', 'k', 'b', 'kn', 'r']
+  return units.map(unit => `${player}-${unit}`)
+}
+
+function buildEmptyRows() {
+  return _.times(4, () => _.times(8, () => 'empty'))
+}
+
+function createBoard() {
+  return [
+    buildUnitRow('b'),
+    buildUnitRow('b', true),
+    ...buildEmptyRows(),
+    buildUnitRow('w', true),
+    buildUnitRow('w')
   ]
-  return board
 }
 
-const board = createBoard()
-
-const state = {
-  board: board,
-  origin: [],
-  turn: 'w'
-}
-
-
-
-const render = (board) => {
-  board.forEach((row, i) => {
-    row.forEach((cell, j) => {
+function render(board) {
+  let html = ''
+  _.forEach(board, (row, i) => {
+    _.forEach(row, (col, j) => {
       const color = (i + j) % 2 ? 'black' : 'white'
-      const html = `<div id="${i}-${j}" class="cell cell--${color} cell--${cell}"></div>`
-      $(html).appendTo('#board')
+      const compiled = _.template(cellTemplate)({
+        row: i,
+        col: j,
+        color: color,
+        unit: col
+      })
+      html = html + compiled
     })
+  })
+  mountNode.innerHTML = html
+}
+
+function addEventListeners(state) {
+  const cells = Array.from(document.getElementsByClassName('cell'))
+  _.forEach(cells, cell => {
+    cell.addEventListener('click', handleSelect.bind(null, state))
   })
 }
 
-render(board)
+function isInitialSelection(state) {
+  return state.origin.length
+}
 
-const getdest = (el) => {
-  return $(el).attr('id').toString().split('-').map(i => parseInt(i, 10))
+function isPlayerUnit(state, origin) {
+  const row = state.board[origin[0]]
+  const cell = row[origin[1]]
+  const prefix = cell.split('-')[0]
+  return prefix === state.turn
+}
+
+function isOrigin(state, dest) {
+  const sameCol = state.origin[0] === dest[0]
+  const sameRow = state.origin[1] === dest[1]
+  return sameCol && sameRow
+}
+
+function setOrigin(state, origin, target) {
+  target.classList.add('cell--origin')
+  state.origin = origin
+}
+
+function redraw(state) {
+  state.origin = []
+  render(state.board)
+  addEventListeners(state)
 }
 
 function isLegal(state, dest) {
-  return kingThreat(state, dest) && takeOwnPiece(state, dest) && validPieceMove(state, dest) && otherChecks(state, dest);
+  return (
+    kingThreat(state, dest) &&
+    !isPlayerUnit(state, dest) &&
+    validMove(state, dest) &&
+    otherChecks(state, dest)
+  )
 }
+
+function setDestCell(state, coords) {
+  state.board[coords[0]][coords[1]] = state.board[state.origin[0]][state.origin[1]]
+}
+
+function clearOriginCell(state) {
+  state.board[state.origin[0]][state.origin[1]] = 'empty'
+}
+
+function endTurn(state) {
+  state.turn = state.turn === 'b' ? 'w' : 'b'
+}
+
+function moveUnit(state, coords) {
+  setDestCell(state, coords)
+  clearOriginCell(state)
+  redraw(state)
+  endTurn(state)
+}
+
+function handleSelect(state, event) {
+  const { target } = event
+  const coords = getCoords(target)
+  if (!isInitialSelection(state)) {
+    if (isPlayerUnit(state, coords)) {
+      setOrigin(state, coords, target)
+    }
+  } else {
+    if (isOrigin(state, coords)) {
+      redraw(state)
+    } else {
+      if (isLegal(state, coords)) {
+        moveUnit(state, coords)
+      }
+    }
+  }
+}
+
+function getCoords(element) {
+  return element
+    .getAttribute('id')
+    .split('-')
+    .map(str => parseInt(str, 10))
+}
+
+function init() {
+  const state = {
+    board: createBoard(),
+    origin: [],
+    turn: 'w'
+  }
+  render(state.board)
+  addEventListeners(state)
+}
+
+init()
 
 function kingThreat(state, dest) {
   return true
-}
-
-function takeOwnPiece(state, dest) {
-  return state.board[dest[0]][dest[1]][0] !== state.turn
 }
 
 function noVerticalJump(state, dest){
@@ -94,26 +188,64 @@ function noHorizontalJump(state, dest){
 }
 
 function noDiagonalJump(state, dest){
-  return true;
+  if(dest[0]< state.origin[0] && dest[1] <  state.origin[1]){
+    for(var i= 1; i < state.origin[0] - dest[0]; i++){
+      if(state.board[dest[0]+i][dest[1]+i]!='empty'){
+        return false;
+      }
+    }
+  }
+  else if(dest[0]< state.origin[0] && dest[1] <  state.origin[1]){
+    for(var i= 1; i < dest[0] - state.origin[0]; i++){
+      if(state.board[state.origin[0]+i][state.origin[1]+i]!='empty'){
+        return false;
+      }
+    }
+  }
+  else{
+    return true;
+  }
+  // else if(dest[0]< state.origin[0] && dest[1] >  state.origin[1]){
+  //   for(var i= 1; i < dest[0] - state.origin[0]; i++){
+  //     if(state.board[state.origin[0]+i][state.origin[1]+i]!='empty'){
+  //       return false;
+  //     }
+  //   }
+  // }
+  // else{
+  //   for(var i= 1; i < dest[0] - state.origin[0]; i++){
+  //     if(state.board[state.origin[0]+i][state.origin[1]+i]!='empty'){
+  //       return false;
+  //     }
+  //   }
+  // }
 }
 
-function validPieceMove(state, dest) {
-  const piece = state.board[state.origin[0]][state.origin[1]]
-  if (piece === 'br' || piece === 'wr') return validRookMove(state, dest)
-  else if (piece === 'bkn' || piece === 'wkn') return validKnightMove(state, dest)
-  else if (piece === 'bb' || piece === 'wb') return validBishopMove(state, dest)
-  else if (piece === 'bq' || piece === 'wq') return validQueenMove(state, dest)
-  else if (piece === 'bk' || piece === 'wk') return validKingMove(state, dest)
-  else if (piece === 'bp') return validBlackPawnMove(state, dest)
-  else if (piece === 'wp') return validWhitePawnMove(state, dest)
-}
-
-function sameSquare(state, dest) {
-   return state.origin[0] == dest[0] && state.origin[1] == dest[1]
+function validMove(state, dest) {
+  const row = state.board[state.origin[0]]
+  const cell = row[state.origin[1]]
+  switch(true) {
+    case cell === 'b-r' || cell === 'w-r':
+      return validRookMove(state, dest)
+    case cell === 'b-kn' || cell === 'w-kn':
+      return validKnightMove(state, dest)
+    case cell === 'b-b' || cell === 'w-b':
+      return validBishopMove(state, dest)
+    case cell === 'b-q' || cell === 'w-q':
+      return validQueenMove(state, dest)
+    case cell === 'b-k' || cell === 'w-k':
+      return validKingMove(state, dest)
+    case cell === 'b-p':
+      return validBlackPawnMove(state, dest)
+    case cell === 'w-p':
+      return validWhitePawnMove(state, dest)
+    default:
+      return;
+  }
 }
 
 function validRookMove(state, dest){
-  if(sameSquare(state, dest)){
+  if(isPlayerUnit(state, dest)){
     return false;
   }
   else if (state.origin[0] != dest[0] && state.origin[1] != dest[1]){
@@ -128,15 +260,25 @@ function validRookMove(state, dest){
 }
 
 function validKnightMove(state, dest){
-  return true
+  var distOne = Math.abs(state.origin[0]-dest[0]);
+  var distTwo = Math.abs(state.origin[1]-dest[1]);
+  return Math.max(distOne,distTwo) === 2 && Math.min(distOne, distTwo) ===1 ;
 }
 
 function validBishopMove(state, dest){
-  return true
+  if (isPlayerUnit(state, dest)) {
+    return false
+  } else if (Math.abs(state.origin[0]-dest[0]) === Math.abs(state.origin[1]-dest[1])){
+    return noDiagonalJump(state, dest);
+  }
+  else{
+    return false;
+  }
 }
 
+
 function validKingMove(state, dest){
-  if(sameSquare(state, dest)){
+  if(isPlayerUnit(state, dest)){
     return false;
   } else if (Math.abs(state.origin[0]-dest[0]) >1) {
     return false;
@@ -159,29 +301,6 @@ function validWhitePawnMove(state, dest){
   return true
 }
 
-function otherChecks(state, dest) {
+function otherChecks(state, dest){
   return true
 }
-
-
-
-$('#board').on('click', '.cell', event => {
-  if (!state.origin.length) {
-    const dest = getdest(event.target)
-    if (state.board[dest[0]][dest[1]][0]== state.turn) {
-      $(event.target).addClass('cell--origin');
-      state.origin = dest;
-    }
-  } else {
-    const dest2 = getdest(event.target);
-    if (isLegal(state, dest2)) {
-      state.board[dest2[0]][dest2[1]] = state.board[state.origin[0]][state.origin[1]];
-      state.board[state.origin[0]][state.origin[1]]='empty';
-      $('#board').empty();
-      state.origin = [];
-      render(state.board)
-      state.turn = state.turn === 'b' ? 'w' : 'b'
-    }
-  }
-})
-

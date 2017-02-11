@@ -28,50 +28,50 @@
   background-color: pink;
 }
 
-.cell--br {
+.cell--b-r {
   background-image: url('assets/blackRook.png');
 }
 
-.cell--bkn {
+.cell--b-kn {
   background-image: url('assets/blackKnight.png');
 }
 
-.cell--bb {
+.cell--b-b {
   background-image: url('assets/blackBishop.png');
 }
 
-.cell--bq {
+.cell--b-q {
   background-image: url('assets/blackQueen.png');
 }
 
-.cell--bk {
+.cell--b-k {
   background-image: url('assets/blackKing.png');
 }
 
-.cell--bp {
+.cell--b-p {
   background-image: url('assets/blackPawn.png');
 }
 
-.cell--wr {
+.cell--w-r {
   background-image: url('assets/whiteRook.png');
 }
 
-.cell--wkn {
+.cell--w-kn {
   background-image: url('assets/whiteKnight.png');
 }
 
-.cell--wb {
+.cell--w-b {
   background-image: url('assets/whiteBishop.png');
 }
 
-.cell--wq {
+.cell--w-q {
   background-image: url('assets/whiteQueen.png');
 }
 
-.cell--wk {
+.cell--w-k {
   background-image: url('assets/whiteKing.png');
 }
 
-.cell--wp {
+.cell--w-p {
   background-image: url('assets/whitePawn.png');
 }
