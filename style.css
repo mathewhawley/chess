@@ -24,6 +24,10 @@
   background-color: #A9A9A9;
 }
 
+.cell--selected {
+  background-color: pink;
+}
+
 .cell--br {
   background-image: url('assets/blackRook.png');
 }
