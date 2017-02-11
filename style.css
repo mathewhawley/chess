@@ -1,0 +1,73 @@
+.board {
+  display: flex;
+  flex-wrap: wrap;
+  width: 500px;
+  height: 500px;
+}
+
+.cell {
+  flex-basis: calc(100% / 8);
+  height: calc(100% / 8);
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.cell:hover {
+  cursor: pointer;
+}
+
+.cell--white {
+  background-color: #fff;
+}
+
+.cell--black {
+  background-color: #A9A9A9;
+}
+
+.cell--br {
+  background-image: url('assets/blackRook.png');
+}
+
+.cell--bkn {
+  background-image: url('assets/blackKnight.png');
+}
+
+.cell--bb {
+  background-image: url('assets/blackBishop.png');
+}
+
+.cell--bq {
+  background-image: url('assets/blackQueen.png');
+}
+
+.cell--bk {
+  background-image: url('assets/blackKing.png');
+}
+
+.cell--bp {
+  background-image: url('assets/blackPawn.png');
+}
+
+.cell--wr {
+  background-image: url('assets/whiteRook.png');
+}
+
+.cell--wkn {
+  background-image: url('assets/whiteKnight.png');
+}
+
+.cell--wb {
+  background-image: url('assets/whiteBishop.png');
+}
+
+.cell--wq {
+  background-image: url('assets/whiteQueen.png');
+}
+
+.cell--wk {
+  background-image: url('assets/whiteKing.png');
+}
+
+.cell--wp {
+  background-image: url('assets/whitePawn.png');
+}
