@@ -27,24 +27,28 @@ const render = (board) => {
 render(board)
 
 const getCoords = (el) => {
-  return $(el).attr('id').toString().split('-')
+  return $(el).attr('id').toString().split('-').map(i => parseInt(i, 10))
 }
 
 const state = {
-  selected: []
+  selected: [],
+  turn: 'w'
 }
 
 $('#board').on('click', '.cell', event => {
   if (!state.selected.length) {
-    $(event.target).addClass('cell--selected')
     const coords = getCoords(event.target)
-    state.selected = coords
+    if (board[coords[0]][coords[1]][0]== state.turn) {
+      $(event.target).addClass('cell--selected');
+      state.selected = coords;
+      state.turn = state.turn === 'b' ? 'w' : 'b'
+    }
   } else {
     const coords2 = getCoords(event.target)
-    const startCellContents = board[parseInt(state.selected[0], 10)][parseInt(state.selected[1], 10)]
-    const endCellContents = board[parseInt(coords2[0], 10)][parseInt(coords2[1], 10)]
-    board[parseInt(state.selected[0], 10)][parseInt(state.selected[1], 10)]=endCellContents;
-    board[parseInt(coords2[0], 10)][parseInt(coords2[1], 10)]=startCellContents;
+    const startCellContents = board[state.selected[0]][state.selected[1]]
+    const endCellContents = board[coords2[0]][coords2[1]]
+    board[state.selected[0]][state.selected[1]]=endCellContents;
+    board[coords2[0]][coords2[1]]=startCellContents;
     $('#board').empty();
     state.selected = [];
     render(board)
