@@ -123,7 +123,18 @@ function redraw() {
 }
 
 function setDestCell() {
-  state.board[state.dest[0]][state.dest[1]] = state.board[state.origin[0]][state.origin[1]]
+  //Check if white pawn has reached final rank, if so promote to queen
+  if(state.dest[0]==0 && state.board[state.origin[0]][state.origin[1]] ==='w-p'){
+    state.board[state.dest[0]][state.dest[1]]  = 'w-q'  
+  }
+  //Same check for black pawn
+  else if (state.dest[0]==7 && state.board[state.origin[0]][state.origin[1]] ==='b-p'){
+    state.board[state.dest[0]][state.dest[1]] = 'b-q'
+  }
+  //Else, set destination cell as original piece
+  else{
+    state.board[state.dest[0]][state.dest[1]] = state.board[state.origin[0]][state.origin[1]]
+  }
 }
 
 function clearOriginCell() {
