@@ -46,7 +46,7 @@ function noHorizontalJump(){
 function noDiagonalJump(){
   if(state.dest[0]< state.origin[0] && state.dest[1] <  state.origin[1]){
     for(var i= 1; i < state.origin[0] - state.dest[0]; i++){
-      if(state.board[state.dest[0]+i][state.dest[1]+i]!='empty'){
+      if(state.board[state.origin[0]-i][state.origin[1]-i]!='empty'){
         return false;
       }
     }
@@ -60,14 +60,14 @@ function noDiagonalJump(){
   }
   else if(state.dest[0]< state.origin[0] && state.dest[1] >  state.origin[1]){
     for(var i= 1; i < state.origin[0] - state.dest[0]; i++){
-      if(state.board[state.dest[0]+i][state.origin[1]+i]!='empty'){
+      if(state.board[state.origin[0]-i][state.origin[1]+i]!='empty'){
         return false;
       }
     }
   }
   else{
     for(var i= 1; i < state.dest[0] - state.origin[0]; i++){
-      if(state.board[state.origin[0]+i][state.dest[1]+i]!='empty'){
+      if(state.board[state.origin[0]+i][state.origin[1]-i]!='empty'){
         return false;
       }
     }
