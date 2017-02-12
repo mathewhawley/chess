@@ -58,10 +58,15 @@ function noDiagonalJump(){
   return true;
 }
 
+//helper function checking if destination square is equal to en-passant placeholder
+function enPassantCheck(){
+  return state.dest[0] === state.old_en_passant[0] && state.dest[1]===state.old_en_passant[1]
+}
+
 function validRookMove() {
   //Piece cannot have changed both row and column
   if (state.origin[0] !== state.dest[0] && state.origin[1] !== state.dest[1]) {
-    return false
+    return false;
   //Cannot have jumped over any pieces
   } else if (state.origin[0] === state.dest[0]) {
     return noHorizontalJump();
@@ -95,35 +100,41 @@ function validKingMove(){
 
 //Reusing bishop and rook functions.
 function validQueenMove(){
-  return validBishopMove() || validRookMove()
+  return validBishopMove() || validRookMove();
 }
 
 function validBlackPawnMove(){
+  console.log(state.old_en_passant)
+  console.log(state.dest)
   if(state.origin[0]-state.dest[0] === -1 && state.dest[1] === state.origin[1] && state.board[state.dest[0]][state.dest[1]]==='empty'){
-    return true
+    return true;
   }
-  if(state.origin[0]-state.dest[0] === -1 && Math.abs(state.dest[1]-state.origin[1]) ===1 && state.board[state.dest[0]][state.dest[1]][0]==='w'){
+  if(state.origin[0]-state.dest[0] === -1 && Math.abs(state.dest[1]-state.origin[1]) ===1 && (state.board[state.dest[0]][state.dest[1]][0]==='w'|| enPassantCheck())){
     return true;
   }
   if(state.origin[0]== 1 && state.dest[0] == 3 && state.dest[1] === state.origin[1] && state.board[state.dest[0]][state.dest[1]]==='empty'){
+    state.new_en_passant =[2,state.dest[1]]
     return true;
   }
-  return false
+  return false;
 }
 
 function validWhitePawnMove(){
+  console.log(state.old_en_passant);
+  console.log(state.dest)
   //moved 1 forward to empty square
   if(state.origin[0]-state.dest[0] === 1 && state.dest[1] === state.origin[1] && state.board[state.dest[0]][state.dest[1]]==='empty'){
     return true;
   }
   //moved 1 forward, 1 diagonal and captured piece
-  if(state.origin[0]-state.dest[0] === 1 && Math.abs(state.dest[1]-state.origin[1]) ===1 && state.board[state.dest[0]][state.dest[1]][0]==='b'){
+  if(state.origin[0]-state.dest[0] === 1 && Math.abs(state.dest[1]-state.origin[1]) ===1 && (state.board[state.dest[0]][state.dest[1]][0]==='b'|| enPassantCheck())){
     return true;
   }
 
   //moved two forward from starting row
   if(state.origin[0]== 6 && state.dest[0] == 4 && state.dest[1] === state.origin[1] && state.board[state.dest[0]][state.dest[1]]==='empty'){
+    state.new_en_passant =[5,state.dest[1]]
     return true;
   }
-  return false
+  return false;
 }
