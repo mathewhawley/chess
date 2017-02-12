@@ -142,6 +142,5 @@ function validWhitePawnMove(){
   if(state.origin[0]== 6 && state.dest[0] == 4 && state.dest[1] === state.origin[1] && state.board[state.dest[0]][state.dest[1]]==='empty'){
     return true;
   }
-  
   return false
 }
