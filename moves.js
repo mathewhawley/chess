@@ -1,15 +1,15 @@
+//all nojump functions check that the candidate move does not involve an illegal 'jump' 
 function noVerticalJump(){
-  console.log(state.origin[0], state.dest[0])
+  //if moving forward
   if (state.origin[0] > state.dest[0]) {
     for(var i=state.dest[0]+1; i < state.origin[0]; i++){
-        console.log(i)
-        console.log(state.dest[1])
-        console.log(state.board[i][state.dest[1]])
+      //return false if any cells between origin and destination are not empty
       if(state.board[i][state.dest[1]]!='empty'){
         return false;
       }
     }
   }
+  //same for moving backwards
   else{
     for(var i=state.origin[0]+1; i < state.dest[0]; i++){
       if(state.board[i][state.dest[1]]!='empty'){
@@ -17,14 +17,13 @@ function noVerticalJump(){
       }
     }
   }
+  //after perfoming either test, if all cells are empty, return true
   return true;
 }
-
+//same as above for horizontal jumps
 function noHorizontalJump(){
   if (state.origin[1] > state.dest[1]) {
-    console.log(state.origin[1],state.dest[1])
     for(var i=state.dest[1]+1; i < state.origin[1]; i++){
-      console.log(i)
       if(state.board[state.dest[0]][i]!='empty'){
         return false;
       }
@@ -59,6 +58,7 @@ function noDiagonalJump(){
   else{
     return true;
   }
+  return true;
   // else if(dest[0]< state.origin[0] && dest[1] >  state.origin[1]){
   //   for(var i= 1; i < dest[0] - state.origin[0]; i++){
   //     if(state.board[state.origin[0]+i][state.origin[1]+i]!='empty'){
@@ -116,9 +116,30 @@ function validQueenMove(){
 }
 
 function validBlackPawnMove(){
-  return true
+  if(state.origin[0]-state.dest[0] === -1 && state.dest[1] === state.origin[1] && state.board[state.dest[0]][state.dest[1]]==='empty'){
+    return true
+  }
+  if(state.origin[0]-state.dest[0] === -1 && Math.abs(state.dest[1]-state.origin[1]) ===1 && state.board[state.dest[0]][state.dest[1]][0]==='w'){
+    return true;
+  }
+  if(state.origin[0]== 1 && state.dest[0] == 3 && state.dest[1] === state.origin[1] && state.board[state.dest[0]][state.dest[1]]==='empty'){
+    return true;
+  }
+
+  return false
 }
 
 function validWhitePawnMove(){
-  return true
+  if(state.origin[0]-state.dest[0] === 1 && state.dest[1] === state.origin[1] && state.board[state.dest[0]][state.dest[1]]==='empty'){
+    return true;
+  }
+  if(state.origin[0]-state.dest[0] === 1 && Math.abs(state.dest[1]-state.origin[1]) ===1 && state.board[state.dest[0]][state.dest[1]][0]==='b'){
+    return true;
+  }
+
+  if(state.origin[0]== 6 && state.dest[0] == 4 && state.dest[1] === state.origin[1] && state.board[state.dest[0]][state.dest[1]]==='empty'){
+    return true;
+  }
+  
+  return false
 }
