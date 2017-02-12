@@ -2,7 +2,7 @@ const mountNode = document.getElementById('board')
 const cellTemplate = document.getElementById('cell-template').innerHTML
 
 const state = {
-  board: createBoard(),
+  board: [],
   origin: [],
   dest: [],
   turn: 'w'
