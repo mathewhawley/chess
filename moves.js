@@ -42,34 +42,17 @@ function noHorizontalJump(){
   return true;
 }
 
-//Hard to read. Loops through squares connecting origin and destination and checks for non-empty squares, according to for different cases.  
+//Loops through squares connecting origin and destination and checks for non-empty squares. 
 function noDiagonalJump(){
-  if(state.dest[0]< state.origin[0] && state.dest[1] <  state.origin[1]){
-    for(var i= 1; i < state.origin[0] - state.dest[0]; i++){
-      if(state.board[state.origin[0]-i][state.origin[1]-i]!='empty'){
-        return false;
-      }
-    }
-  }
-  else if(state.dest[0] > state.origin[0] && state.dest[1] >  state.origin[1]){
-    for(var i= 1; i < state.dest[0] - state.origin[0]; i++){
-      if(state.board[state.origin[0]+i][state.origin[1]+i]!='empty'){
-        return false;
-      }
-    }
-  }
-  else if(state.dest[0]< state.origin[0] && state.dest[1] >  state.origin[1]){
-    for(var i= 1; i < state.origin[0] - state.dest[0]; i++){
-      if(state.board[state.origin[0]-i][state.origin[1]+i]!='empty'){
-        return false;
-      }
-    }
-  }
-  else{
-    for(var i= 1; i < state.dest[0] - state.origin[0]; i++){
-      if(state.board[state.origin[0]+i][state.origin[1]-i]!='empty'){
-        return false;
-      }
+  //Are the x coordinates increasing from origin --> destination?
+  const verticalDirection = state.dest[0]< state.origin[0] ? 1 : -1;
+  //Are the y coordinates increasing from origin --> destination?
+  const horizontalDirection =  state.dest[1]< state.origin[1] ? 1 : -1;
+  for(var i= 1; i < state.origin[0] - state.dest[0]; i++){
+    //move one step in the horizontal and vertical direction from origin to destination
+    if(state.board[state.origin[0]-i*verticalDirection][state.origin[1]-i*horizontalDirection]!='empty'){
+    //if nonempty, return false
+      return false;
     }
   }
   return true;
