@@ -5,7 +5,9 @@ const state = {
   board: [],
   origin: [],
   dest: [],
-  turn: 'w'
+  turn: 'w',
+  old_en_passant: [],
+  new_en_passant: []
 }
 
 /**
@@ -124,25 +126,35 @@ function redraw() {
 
 function setDestCell() {
   //Check if white pawn has reached final rank, if so promote to queen
+  if(enPassantCheck()){
+    if(state.dest[0] ===5){
+      state.board[4][state.dest[1]]='empty'
+    }else{
+      state.board[3][state.dest[1]]='empty'
+    }
+  }
   if(state.dest[0]==0 && state.board[state.origin[0]][state.origin[1]] ==='w-p'){
-    state.board[state.dest[0]][state.dest[1]]  = 'w-q'  
+    state.board[state.dest[0]][state.dest[1]]  = 'w-q';  
   }
   //Same check for black pawn
   else if (state.dest[0]==7 && state.board[state.origin[0]][state.origin[1]] ==='b-p'){
-    state.board[state.dest[0]][state.dest[1]] = 'b-q'
+    state.board[state.dest[0]][state.dest[1]] = 'b-q';
   }
   //Else, set destination cell as original piece
   else{
-    state.board[state.dest[0]][state.dest[1]] = state.board[state.origin[0]][state.origin[1]]
+    state.board[state.dest[0]][state.dest[1]] = state.board[state.origin[0]][state.origin[1]];
   }
 }
 
 function clearOriginCell() {
-  state.board[state.origin[0]][state.origin[1]] = 'empty'
+  state.board[state.origin[0]][state.origin[1]] = 'empty';
 }
 
 function endTurn() {
-  state.turn = state.turn === 'b' ? 'w' : 'b'
+  state.turn = state.turn === 'b' ? 'w' : 'b';
+  //update en_passant placeholders
+  state.old_en_passant = state.new_en_passant;
+  state.new_en_passant = [];
 }
 
 function moveUnit() {
