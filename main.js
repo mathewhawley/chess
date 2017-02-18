@@ -1,13 +1,14 @@
 const mountNode = document.getElementById('board')
 const cellTemplate = document.getElementById('cell-template').innerHTML
-
-const state = {
+const currentState = {
   board: [],
   origin: [],
   dest: [],
   turn: 'w',
   old_en_passant: [],
-  new_en_passant: []
+  new_en_passant: [],
+  blackKingPos: [0, 4],
+  whiteKingPos: [7, 4],
 }
 
 /**
@@ -26,8 +27,8 @@ function buildEmptyRows() {
   return _.times(4, () => _.times(8, () => 'empty'))
 }
 
-function createBoard() {
-  return [
+function createBoard(state) {
+  state.board = [
     buildUnitRow('b'),
     buildUnitRow('b', true),
     ...buildEmptyRows(),
@@ -36,7 +37,7 @@ function createBoard() {
   ]
 }
 
-function render() {
+function render(state) {
   let html = ''
   _.forEach(state.board, (row, i) => {
     _.forEach(row, (col, j) => {
@@ -54,10 +55,10 @@ function render() {
   mountNode.innerHTML = html
 }
 
-function addEventListeners() {
+function addEventListeners(state) {
   const cells = Array.from(document.getElementsByClassName('cell'))
   _.forEach(cells, cell => {
-    cell.addEventListener('click', handleSelect)
+    cell.addEventListener('click', handleSelect.bind(null, state))
   })
 }
 
@@ -68,19 +69,19 @@ function getCoords(element) {
   ]
 }
 
-function handleSelect(event) {
+function handleSelect(state, event) {
   const { target } = event
-  if (!isInitialSelection()) {
-    if (isPlayerUnit(target)) {
-      setOrigin(target)
+  if (!isInitialSelection(state)) {
+    if (isPlayerUnit(state, target)) {
+      setOrigin(state, target)
     }
   } else {
-    setDest(target)
-    if (isOrigin()) {
-      redraw()
+    setDest(state, target)
+    if (isOrigin(state)) {
+      redraw(state)
     } else {
-      if (isLegal(target)) {
-        moveUnit(target)
+      if (isLegal(state, target)) {
+        moveUnit(state, target)
       }
     }
   }
@@ -90,15 +91,15 @@ function handleSelect(event) {
  * State checks
  * ========================================================================== */
 
-function isInitialSelection() {
+function isInitialSelection(state) {
   return state.origin.length
 }
 
-function isPlayerUnit(target) {
+function isPlayerUnit(state, target) {
   return target.dataset.player === state.turn
 }
 
-function isOrigin() {
+function isOrigin(state) {
   const sameCol = state.origin[0] === state.dest[0]
   const sameRow = state.origin[1] === state.dest[1]
   return sameCol && sameRow
@@ -108,25 +109,25 @@ function isOrigin() {
  * State changes
  * ========================================================================== */
 
-function setOrigin(target) {
+function setOrigin(state, target) {
   target.classList.add('cell--origin')
   state.origin = getCoords(target)
 }
 
-function setDest(target) {
+function setDest(state, target) {
   state.dest = getCoords(target)
 }
 
-function redraw() {
+function redraw(state) {
   state.origin = []
   state.dest = []
-  render(state.board)
-  addEventListeners()
+  render(state)
+  addEventListeners(state)
 }
 
-function setDestCell() {
+function setDestCell(state) {
   //Check if white pawn has reached final rank, if so promote to queen
-  if(enPassantCheck()){
+  if(enPassantCheck(state)){
     if(state.dest[0] ===5){
       state.board[4][state.dest[1]]='empty'
     }else{
@@ -134,7 +135,7 @@ function setDestCell() {
     }
   }
   if(state.dest[0]==0 && state.board[state.origin[0]][state.origin[1]] ==='w-p'){
-    state.board[state.dest[0]][state.dest[1]]  = 'w-q';  
+    state.board[state.dest[0]][state.dest[1]]  = 'w-q';
   }
   //Same check for black pawn
   else if (state.dest[0]==7 && state.board[state.origin[0]][state.origin[1]] ==='b-p'){
@@ -146,43 +147,67 @@ function setDestCell() {
   }
 }
 
-function clearOriginCell() {
+function clearOriginCell(state) {
   state.board[state.origin[0]][state.origin[1]] = 'empty';
 }
 
-function endTurn() {
+function endTurn(state) {
   state.turn = state.turn === 'b' ? 'w' : 'b';
   //update en_passant placeholders
   state.old_en_passant = state.new_en_passant;
   state.new_en_passant = [];
 }
 
-function moveUnit() {
-  setDestCell()
-  clearOriginCell()
-  redraw()
-  endTurn()
+function moveUnit(state) {
+
+  setDestCell(state)
+  clearOriginCell(state)
+  redraw(state)
+  endTurn(state)
+  kingThreat(state)
 }
 
 /**
  * Move checks
  * ========================================================================== */
 
-function isLegal(target) {
+function isLegal(state, target) {
   return (
-    kingThreat(target) &&
-    !isPlayerUnit(target) &&
-    validMove(target) &&
-    otherChecks(target)
+    // kingThreat(state) &&
+    !isPlayerUnit(state, target) &&
+    validMove(state, target) &&
+    otherChecks(state, target)
   )
 }
 
-function kingThreat(target) {
+function kingThreat(state) {
+  let kingNode
+  let kingPos
+  let isKingThreat = false
+  if (state.turn === 'b') {
+    kingPos = state.whiteKingPos
+    kingNode = document.querySelectorAll(`[data-player='w'][data-row='${kingPos[0]}'][data-col='${kingPos[1]}']`)[0]
+  } else {
+    kingPos = state.blackKingPos
+    kingNode = document.querySelectorAll(`[data-player='b'][data-row='${kingPos[0]}'][data-col='${kingPos[1]}']`)[0]
+  }
+  _.forEach(state.board, (row, i) => {
+    _.forEach(row, (col, j) => {
+      let stateClone = _.cloneDeep(state)
+
+      stateClone.origin = [i, j]
+      stateClone.dest = kingPos
+      if (validMove(stateClone, kingNode) && state.turn === stateClone.board[i][j][0]) {
+        isKingThreat = true
+      }
+    })
+  })
+  console.log(isKingThreat)
   return true
 }
 
-function validMove(target) {
-  if (isPlayerUnit(target)) {
+function validMove(state, target) {
+  if (isPlayerUnit(state, target)) {
     return false
   }
 
@@ -191,25 +216,25 @@ function validMove(target) {
 
   switch(true) {
     case cell === 'b-r' || cell === 'w-r':
-      return validRookMove()
+      return validRookMove(state)
     case cell === 'b-kn' || cell === 'w-kn':
-      return validKnightMove()
+      return validKnightMove(state)
     case cell === 'b-b' || cell === 'w-b':
-      return validBishopMove()
+      return validBishopMove(state)
     case cell === 'b-q' || cell === 'w-q':
-      return validQueenMove()
+      return validQueenMove(state)
     case cell === 'b-k' || cell === 'w-k':
-      return validKingMove()
+      return validKingMove(state)
     case cell === 'b-p':
-      return validBlackPawnMove()
+      return validBlackPawnMove(state)
     case cell === 'w-p':
-      return validWhitePawnMove()
+      return validWhitePawnMove(state)
     default:
       return;
   }
 }
 
-function otherChecks(target){
+function otherChecks(state, target){
   return true
 }
 
@@ -217,10 +242,10 @@ function otherChecks(target){
  * Boot up
  * ========================================================================== */
 
-function init() {
-  state.board = createBoard()
-  render()
-  addEventListeners()
+function init(state) {
+  createBoard(state)
+  render(state)
+  addEventListeners(state)
 }
 
-init()
+init(currentState)
