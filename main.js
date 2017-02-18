@@ -195,10 +195,8 @@ function kingThreat(state) {
   let isKingThreat = false
   if (state.turn === 'b') {
     kingPos = state.whiteKingPos
-    kingNode = document.querySelectorAll(`[data-player='w'][data-row='${kingPos[0]}'][data-col='${kingPos[1]}']`)[0]
   } else {
     kingPos = state.blackKingPos
-    kingNode = document.querySelectorAll(`[data-player='b'][data-row='${kingPos[0]}'][data-col='${kingPos[1]}']`)[0]
   }
   _.forEach(state.board, (row, i) => {
     _.forEach(row, (col, j) => {
@@ -206,7 +204,7 @@ function kingThreat(state) {
 
       stateClone.origin = [i, j]
       stateClone.dest = kingPos
-      if (validMove(stateClone, kingNode) && state.turn === stateClone.board[i][j][0]) {
+      if (validMove(stateClone) && state.turn === stateClone.board[i][j][0]) {
         isKingThreat = true
       }
     })
