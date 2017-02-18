@@ -72,7 +72,7 @@ function getCoords(element) {
 function handleSelect(state, event) {
   const { target } = event
   if (!isInitialSelection(state)) {
-    if (isPlayerUnit(state, target)) {
+    if (isOwnUnit(state,target)) {
       setOrigin(state, target)
     }
   } else {
@@ -80,8 +80,8 @@ function handleSelect(state, event) {
     if (isOrigin(state)) {
       redraw(state)
     } else {
-      if (isLegal(state, target)) {
-        moveUnit(state, target)
+      if (isLegal(state)) {
+        moveUnit(state)
       }
     }
   }
@@ -95,8 +95,12 @@ function isInitialSelection(state) {
   return state.origin.length
 }
 
-function isPlayerUnit(state, target) {
+function isOwnUnit(state,target) {
   return target.dataset.player === state.turn
+}
+
+function takingOwnUnit(state){
+  return state.turn === state.board[state.dest[0]][state.dest[1]][0]
 }
 
 function isOrigin(state) {
@@ -159,25 +163,30 @@ function endTurn(state) {
 }
 
 function moveUnit(state) {
-
   setDestCell(state)
   clearOriginCell(state)
   redraw(state)
   endTurn(state)
-  kingThreat(state)
 }
 
 /**
  * Move checks
  * ========================================================================== */
 
-function isLegal(state, target) {
+function isLegal(state) {
   return (
-    // kingThreat(state) &&
-    !isPlayerUnit(state, target) &&
-    validMove(state, target) &&
-    otherChecks(state, target)
+    !futureKingThreat(state) &&
+    validMove(state) &&
+    !takingOwnUnit(state)
   )
+}
+
+function futureKingThreat(state){
+  let stateClone = _.cloneDeep(state)
+  setDestCell(stateClone)
+  clearOriginCell(stateClone)
+  endTurn(stateClone)
+  return kingThreat(stateClone)
 }
 
 function kingThreat(state) {
@@ -202,15 +211,10 @@ function kingThreat(state) {
       }
     })
   })
-  console.log(isKingThreat)
-  return true
+  return isKingThreat
 }
 
-function validMove(state, target) {
-  if (isPlayerUnit(state, target)) {
-    return false
-  }
-
+function validMove(state) {
   const row = state.board[state.origin[0]]
   const cell = row[state.origin[1]]
 
@@ -232,10 +236,6 @@ function validMove(state, target) {
     default:
       return;
   }
-}
-
-function otherChecks(state, target){
-  return true
 }
 
 /**
