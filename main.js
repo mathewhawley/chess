@@ -142,6 +142,31 @@ function setEnpassant(state) {
   }
 }
 
+function setCastleFlags(state) {
+  const piece = state.board[state.dest[0]][state.dest[1]];
+  if(piece === 'b-k'){
+    state.blackKingSideCastle = false;
+    state.blackQueenSideCastle = false;
+  }
+  else if(piece == 'w-k'){
+    state.whiteKingSideCastle = false;
+    state.whiteQueenSideCastle = false;
+  }
+  else if (piece == 'w-r' && state.origin[1] === 0){
+    state.whiteQueenSideCastle = false;
+  }
+  else if (piece == 'w-r' && state.origin[1] === 7){
+    state.whiteKingSideCastle = false;
+  }
+  else if (piece == 'b-r' && state.origin[1] === 0){
+    state.blackQueenSideCastle = false;
+  }
+  else if (piece == 'b-r' && state.origin[1] === 7){
+    state.blackKingSideCastle = false;
+  }
+  console.log('castle flag', state)
+}
+
 function setDestCell(state) {
   //Check if white pawn has reached final rank, if so promote to queen
   if(enPassantCheck(state)){
@@ -179,6 +204,7 @@ function moveUnit(state) {
   setDestCell(state)
   clearOriginCell(state)
   setEnpassant(state)
+  setCastleFlags(state)
   redraw(state)
   endTurn(state)
 }
