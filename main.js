@@ -9,6 +9,10 @@ const currentState = {
   new_en_passant: [],
   blackKingPos: [0, 4],
   whiteKingPos: [7, 4],
+  blackQueenSideCastle: true,
+  blackKingSideCastle: true,
+  whiteQueenSideCastle: true,
+  whiteKingSideCastle: true,
 }
 
 /**
@@ -129,6 +133,15 @@ function redraw(state) {
   addEventListeners(state)
 }
 
+function setEnpassant(state) {
+  if(state.origin[0]== 1 && state.dest[0] == 3 && state.turn == 'b'){
+    state.new_en_passant =[2,state.dest[1]]
+  }
+  else if(state.origin[0]== 6 && state.dest[0] == 4 && state.turn == 'w'){
+    state.new_en_passant =[5,state.dest[1]]
+  }
+}
+
 function setDestCell(state) {
   //Check if white pawn has reached final rank, if so promote to queen
   if(enPassantCheck(state)){
@@ -165,6 +178,7 @@ function endTurn(state) {
 function moveUnit(state) {
   setDestCell(state)
   clearOriginCell(state)
+  setEnpassant(state)
   redraw(state)
   endTurn(state)
 }

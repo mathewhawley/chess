@@ -120,7 +120,7 @@ function validBlackPawnMove(state){
     return true;
   }
   if(state.origin[0]== 1 && state.dest[0] == 3 && state.dest[1] === state.origin[1] && state.board[state.dest[0]][state.dest[1]]==='empty'){
-    state.new_en_passant =[2,state.dest[1]]
+    //state.new_en_passant =[2,state.dest[1]]
     return true;
   }
   return false;
@@ -138,7 +138,7 @@ function validWhitePawnMove(state){
 
   //moved two forward from starting row
   if(state.origin[0]== 6 && state.dest[0] == 4 && state.dest[1] === state.origin[1] && state.board[state.dest[0]][state.dest[1]]==='empty'){
-    state.new_en_passant =[5,state.dest[1]]
+    //state.new_en_passant =[5,state.dest[1]]
     return true;
   }
   return false;
