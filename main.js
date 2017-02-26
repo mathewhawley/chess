@@ -164,7 +164,6 @@ function setCastleFlags(state) {
   else if (piece == 'b-r' && state.origin[1] === 7){
     state.blackKingSideCastle = false;
   }
-  console.log('castle flag', state)
 }
 
 function setDestCell(state) {

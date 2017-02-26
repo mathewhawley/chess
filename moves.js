@@ -93,8 +93,11 @@ function validBishopMove(state){
   }
 }
 
+
+
 //King cannot have moved more than 1 square in other directions.
 function validKingMove(state){
+  console.log('kingmove',state)
   if ((Math.abs(state.origin[0] - state.dest[0]) < 2) && (Math.abs(state.origin[1] - state.dest[1]) < 2)) {
     if (state.turn === 'w') {
       state.whiteKingPos = state.dest
@@ -102,7 +105,24 @@ function validKingMove(state){
       state.blackKingPos = state.dest
     }
     return true
-  } else {
+  } else if(state.dest[0] === 7 && state.dest[1] == 6 && state.whiteKingSideCastle && noHorizontalJump(state)) {
+    state.board[7][7]='empty'
+    state.board[7][5]='w-r'
+    return true
+  }  else if(state.dest[0] === 7 && state.dest[1] == 2 && state.whiteQueenSideCastle && noHorizontalJump(state)) {
+    state.board[7][0]='empty'
+    state.board[7][3]='w-r'
+    return true
+  }  else if(state.dest[0] === 0 && state.dest[1] == 6 && state.blackKingSideCastle && noHorizontalJump(state)) {
+    state.board[0][7]='empty'
+    state.board[0][5]='b-r'
+    return true
+  }  else if(state.dest[0] === 0 && state.dest[1] == 2 && state.blackQueenSideCastle && noHorizontalJump(state)) {
+    state.board[0][0]='empty'
+    state.board[0][3]='b-r'
+    return true
+  }
+   else {
     return false
   }
 }
